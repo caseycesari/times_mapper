@@ -30,6 +30,11 @@
           TimesMapper
           %span Search for a subject to see where it was reported on by the New York Times. 
     %div.container
+      %form
+        %fieldset
+          %input{:type => 'text', :name => 'search', :placeholder => 'Enter a topic', :value => params[:search]}
+          %input{:type => 'submit'}
+          %a{:href => '/', :class => 'clear'} clear
       %div#map-container
 
     %div.overlay.about
