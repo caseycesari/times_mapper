@@ -1,0 +1,354 @@
+@import 'variables';
+@import 'overlay';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100%;
+  padding: 10px 0;
+  background: $background_color;
+  font-family: $primary_font_family;
+  font-size: 16px;
+  color: $text_color;
+
+  a {
+    color: $link_color;;
+  }
+
+  form {
+    margin-bottom: 20px;
+
+    fieldset {
+      border: none;
+    }
+  }
+
+  cite, time {
+    display: block;
+  }
+
+  ul {
+    list-style-type: none;
+  }
+}
+
+header {
+  padding: 40px 0 20px 0;
+  width: 960px;
+  margin: 0 auto;
+
+  h1 {
+    a {
+      font-size: 22px;
+      font-weight: normal;
+      color: $highlight;
+      text-decoration: none;
+      line-height: 26px;
+
+      span {
+        display: block;
+        font-size: 18px;
+        color: $text_color;
+      }
+    }
+  }
+}
+
+.container {
+  width: 960px;
+  margin: 0 auto;
+  overflow: visible;
+  padding-bottom: 40px;
+
+  form {
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid $border_color;
+
+    input {
+      background: $secondary_background;
+      border: 1px solid $border_color;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 7px;
+      color: $highlight; 
+      width: 25%;
+
+      &[type="submit"] {
+        color: $text_color;
+        width: 100px;
+        background: $background_color;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    a.clear {
+      color: $text_color;
+      margin-left: 3px;
+    }
+  }
+
+  h2 {
+    font-weight: normal;
+    font-size: 18px;
+    margin-bottom: 15px;
+
+    em {
+      color: $highlight;
+      font-style: normal;
+    }
+  }
+
+  ul.graphs {
+    display: none; //temporarily hiding this
+    list-style-type: none;
+
+    li {
+      background: $secondary_background;
+      height: 40px;
+      width: 100%;
+      margin-bottom: 10px;
+      line-height: 40px;
+      position: relative;
+
+      div {
+        background: $tertiary_background;
+        height: 40px;
+        position: absolute;
+      }
+
+      p {
+        padding-left: 10px;
+        color: $highlight;
+        position: absolute;
+      }
+    }
+  }
+
+  div.graph {
+    background: $secondary_background;
+    background:url('/images/dark-tile.png');
+    position: relative;
+    height: 500px;
+
+    ul.bars {
+      height: 400px;
+
+      li {
+        position: absolute;
+        width: 100px;
+        background: $tertiary_background;
+        bottom: 0;
+        color: $highlight;
+        text-align: center;
+
+        &:before {
+            content: '';
+            width: 35px;
+            height: 100%;
+            position: absolute;
+            top: 25px;
+            right: -35px;
+            background-color: $secondary_background;
+            -webkit-transform: skewY(55deg);
+            -webkit-transform-origin: top;
+            
+            -moz-transform: skewY(55deg);
+            -moz-transform-origin: top;
+            
+            -ms-transform: skewY(55deg);
+            -ms-transform-origin: top;    
+            
+            -o-transform: skewY(55deg);
+            -o-transform-origin: top;     
+            
+            transform: skewY(55deg);
+            transform-origin: top;
+        }
+
+        &.bar-0 {
+          left: 30px;
+        }
+
+        &.bar-1 {
+          left: 190px;
+        }
+
+        a {
+          height: 100%;
+          display: block;
+          padding-top: 10px;
+        }
+      }
+    }
+
+    ul.labels {
+      background: #000;
+      position: absolute;
+      bottom: -50px;
+      width: 100%;
+      min-height: 50px;
+
+      li {
+        margin: 10px 0 0 60px;
+        color: $highlight;
+        float: left;
+        width: 100px;
+        text-align: center;
+
+        &.label-0 {
+          margin-left: 30px;
+        }
+      }
+    }
+
+    ul.y-axis {
+      width: 100px;
+      position: absolute;
+      text-align: right;
+      left: -100px;
+      top: 0;
+
+      li {
+        color: $highlight;
+        padding-right: 10px;
+        height: 100px;
+
+        &.label-0 {
+          height: 93px;
+        }
+      }
+    }
+  }
+
+  ul.articles {
+
+    li {
+      margin-bottom: 25px;
+      color: #333;
+
+      a {
+        color: #313131;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+
+        a {
+          color: #313131;
+          display: block;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      cite {
+        font-size: 12px;
+        font-style: normal;
+        color: gray;
+        font-family: $secondary_font_family;
+      }
+
+      time {
+        font-size: 12px;
+        color: gray;
+        font-family: $secondary_font_family;
+        margin-bottom: 10px;
+      }
+
+      p {
+        line-height: 20px;
+        font-size: 15px;
+      }
+
+      a.load-more {
+        background: #888;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        padding: 10px;
+        font-size: 14px;
+
+        &:after {
+          content: '...';
+        }
+
+        &:hover {
+          background: #000;
+        }
+      }
+
+      &.load {
+        margin-bottom: 0;
+      }
+    }
+    &.secondary {
+      border-top: 1px solid #ccc;
+      padding-top: 25px;
+    }
+  }
+}
+
+.overlay.about {
+  color: #313131;
+  width: 200px;
+  height: 175px;
+
+  p {
+    font-size: 14px;
+    margin-bottom: 15px;    
+    line-height: 18px;
+
+    a {
+      color: #313131;
+    }
+  }
+}
+
+footer {
+  overflow: hidden;
+  display: block;
+  position: absolute;
+  height: 40px;
+  font-size: 12px;
+  bottom: 0;
+  width: 100%;
+
+  &.has-search {
+    ul {
+      display: none; //temporary fix
+    }
+  }
+
+  ul {
+    border-top: 1px solid $border_color;
+    padding-top: 10px;
+    width: 960px;
+    margin: 0 auto;
+
+    li {
+      float: left;
+      margin-right: 5px;
+      border-right: 1px solid $border_color;
+      padding-right: 5px;
+
+      &:last-child {
+        border-right: none;
+      }
+
+      a {
+       color: $text_color;
+      }
+    }
+  }
+}

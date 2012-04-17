@@ -1,0 +1,67 @@
+!!! 5
+%html
+  %head
+    %title New York Times Mapper
+    %link{:href => "/stylesheets/base.css", :media => "screen", :rel => "stylesheet", :type => "text/css"}
+    %link{:href => "/stylesheets/map.css", :media => "screen", :rel => "stylesheet", :type => "text/css"}
+    %link{:href => "http://code.leafletjs.com/leaflet-0.3.1/leaflet.css", :media => "screen", :rel => "stylesheet", :type => "text/css" }
+    /[if lte IE 8]
+      %link{:href => "http://code.leafletjs.com/leaflet-0.3.1/leaflet.ie.css", :media => "screen", :rel => "stylesheet", :type => "text/css" }
+    %script{:src => 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'}
+    %script{:src => "http://code.leafletjs.com/leaflet-0.3.1/leaflet.js"}
+    %script{:src => "/javascript/contrib/wax.leaf.min.js"}
+    %script{:src => '/javascript/tg.js'}
+
+    :javascript
+      $(document).ready(function () {
+        TG.overlay.init();
+
+        wax.tilejson('http://a.tiles.mapbox.com/v3/caseypt.map-6gb1zsot.jsonp',
+          function(tilejson) {
+            var map = new L.Map('map-container')
+              .addLayer(new wax.leaf.connector(tilejson))
+              .setView(new L.LatLng(40.756389, -73.99), 12);
+        });
+      });
+  %body
+    %header
+      %h1
+        %a{:href => '/'}
+          TimesMapper
+          %span Search for a subject to see where it was reported on by the New York Times. 
+    %div.container
+      %div#map-container
+
+    %div.overlay.about
+      %p
+        TimesMapper is a companion project to 
+        %a{:target => "_blank", :href => "http://timesgrapher.herokuapp.com/"} TimesGrapher
+        by 
+        %a{:target => "_blank", :href => "http://mikeball.us/"} MDB
+      %p
+        TimesMapper utilizes the
+        %a{:target => "_blank", :href => "http://developer.nytimes.com/docs/read/article_search_api"} New York Times' articles API
+      %p
+        It's built on
+        %a{:target => "_blank", :href => "http://www.sinatrarb.com/"} Sinatra
+        and uses
+        %a{:target => "_blank", :href => "http://haml-lang.com/"} haml
+        and
+        %a{:target => "_blank", :href => "http://sass-lang.com/"} sass.
+      %p
+        View its source code on
+        %a{:target => "_blank", :href => "http://github.com/caseypt/times_mapper"} Github.
+
+      %p
+        &copy; 2012
+        %a{:target => "_blank", :href => "http://caseypthomas.org"} CPT
+    %div#overlay-mask
+    %footer
+      %ul
+        %li
+          &copy; 2012
+          %a{:target => "_blank", :href => "http://caseypthomas.org"} CPT
+        %li
+          %a{:target => "_blank", :href => "http://github.com/cpt/times_mapper"} Source Code
+        %li
+          %a{:"data-role" => "overlay-trigger", :"data-overlay" => ".about", :href => "#"} About
