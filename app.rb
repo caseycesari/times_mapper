@@ -23,3 +23,29 @@ get '/' do
 
   haml:index
 end
+
+def get_json(query, options = {})
+  options = {
+    :begin_date => '20120101',
+    :end_date => '20120130',
+    :offset => 0
+  }.merge(options)
+
+  base_url = "http://api.nytimes.com/svc/search/v1/"
+  api_key = ENV['NYTIMES_API_KEY']
+  query = "article?format=json&query=#{query}&begin_date=#{options[:begin_date]}&end_date=#{options[:end_date]}&offset=#{options[:offset]}"
+  url = "#{base_url}#{URI.encode(query)}&api-key=#{api_key}"
+  resp = Net::HTTP.get_response(URI.parse(url))
+  data = resp.body
+
+  # convert the returned JSON data to native Ruby
+  # data structure - a hash
+  result = JSON.parse(data)
+
+  # if the hash has 'Error' as a key, then raise an error
+  if result.has_key? 'Error'
+    raise "web service error"
+  end
+  
+  return result
+end
