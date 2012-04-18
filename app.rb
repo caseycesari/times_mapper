@@ -23,6 +23,10 @@ get '/' do
 end
 
 get '/search/:topic' do
+  haml:index
+end
+
+get '/query/:topic' do
   if params[:topic]
     @data = get_json(params[:topic])
     
