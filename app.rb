@@ -1,3 +1,5 @@
+$:.unshift(File.dirname(__FILE__))
+
 require 'rubygems'
 require 'sinatra'
 require 'compass'
@@ -6,35 +8,66 @@ require 'haml'
 require 'json'
 require 'net/http'
 require 'date'
+require 'yaml'
+require 'data_mapper'
+require 'dm-sqlite-adapter'
+
+require 'models'
 
 configure do
   set :haml, {:format => :html5, :escape_html => true}
   set :scss, {:style => :compact, :debug_info => false}
   Compass.add_project_configuration(File.join(Sinatra::Application.root, 'config.rb'))
+
+  DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/tm.db")
+  DataMapper.finalize
+  Location.auto_upgrade!
 end
 
+# Serve the requested stylesheet
 get '/stylesheets/:name.css' do
   content_type 'text/css', :charset => 'utf-8'
   scss(:"sass/#{params[:name]}")
 end
 
+# Index view
 get '/' do
   haml:index
 end
 
+# Go to the index. front-end JS will 
+# listen to pop event and perform search
 get '/search/:topic' do
   haml:index
 end
 
+# Query the nytimes article api
+# for the given topic. 
+# Return the results in JSON form
 get '/query/:topic' do
   if params[:topic]
     @data = get_json(params[:topic])
     
     content_type :json
-    @result = @data.to_json
+    @data.to_json
   end
 end
 
+# Save the given location and its coordinates
+post '/location/:name/:lat/:lng/' do
+  location = Location.create(:name => params[:name], :lat => params[:lat], :lng => params[:lng])
+end
+
+# Get the given location and its coordinates
+get '/location/:name' do
+  @location = Location.first(:name => params[:name])
+
+  content_type :json
+  @location.to_json
+end
+
+# Queries the NYT Article API for the given topic
+# From MDB's TimesGrapher
 def get_json(topic, options = {})
   options = {
     :begin_date => '20120101',
