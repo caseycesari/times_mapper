@@ -84,7 +84,23 @@ header {
 
         &:hover {
           cursor: pointer;
+          background: $secondary_background;
         }
+      }
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 14px;
+      color: $text_color;
+      width: 100px;
+      background: $background_color;
+      border: 1px solid $border_color;
+      padding: 7px;
+
+      &:hover {
+        cursor: pointer;
+        background: $secondary_background;
       }
     }
 
