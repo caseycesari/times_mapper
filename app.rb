@@ -19,12 +19,19 @@ get '/stylesheets/:name.css' do
 end
 
 get '/' do
-  'Hello World!'
+  if params[:search]
+    @data = get_json(params[:search])
+  end
 
   haml:index
 end
 
-def get_json(query, options = {})
+get '/test' do
+  @data = get_json('romney')
+  puts @data
+end
+
+def get_json(topic, options = {})
   options = {
     :begin_date => '20120101',
     :end_date => '20120130',
@@ -33,7 +40,7 @@ def get_json(query, options = {})
 
   base_url = "http://api.nytimes.com/svc/search/v1/"
   api_key = ENV['NYTIMES_API_KEY']
-  query = "article?format=json&query=#{query}&begin_date=#{options[:begin_date]}&end_date=#{options[:end_date]}&offset=#{options[:offset]}"
+  query = "article?format=json&query=#{topic}&begin_date=#{options[:begin_date]}&end_date=#{options[:end_date]}&offset=#{options[:offset]}&fields=title,url,date"
   url = "#{base_url}#{URI.encode(query)}&api-key=#{api_key}"
   resp = Net::HTTP.get_response(URI.parse(url))
   data = resp.body
