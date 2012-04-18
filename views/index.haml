@@ -11,20 +11,18 @@
     %script{:src => "http://code.leafletjs.com/leaflet-0.3.1/leaflet.js"}
     %script{:src => "/javascript/contrib/wax.leaf.min.js"}
     %script{:src => '/javascript/tg.js'}
+    %script{:src => '/javascript/timesmapper.js'}
 
-    :javascript
-      $(document).ready(function () {
+    %script{:type => 'text/javascript'}
+      :plain
         TG.overlay.init();
-
-        wax.tilejson('http://a.tiles.mapbox.com/v3/caseypt.map-6gb1zsot.jsonp',
-          function(tilejson) {
-            var map = new L.Map('map-container')
-              .addLayer(new wax.leaf.connector(tilejson))
-              .setView(new L.LatLng(40.756389, -73.99), 12);
+        var map = new TM.Map({
+          'container': 'map-div',
+          'lat': 40.756389,
+          'lng': -73.99, 
+          'zoom': 12
         });
 
-        var data = #{@result};
-      });
   %body
     %header
       %h1
@@ -35,10 +33,10 @@
       %form
         %fieldset
           %input{:type => 'text', :name => 'search', :placeholder => 'Enter a topic', :value => params[:search]}
-          %input{:type => 'submit'}
+          %button{:class => 'submit'} Submit
           %button{:class => 'clear'} Clear
       
-      %div#map-container
+      %div#map-div
 
     %div.overlay.about
       %p
