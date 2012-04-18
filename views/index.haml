@@ -22,6 +22,8 @@
               .addLayer(new wax.leaf.connector(tilejson))
               .setView(new L.LatLng(40.756389, -73.99), 12);
         });
+
+        var data = #{@result};
       });
   %body
     %header
@@ -35,9 +37,6 @@
           %input{:type => 'text', :name => 'search', :placeholder => 'Enter a topic', :value => params[:search]}
           %input{:type => 'submit'}
           %button{:class => 'clear'} Clear
-
-        -if params[:search]
-          #{@data}
       
       %div#map-container
 

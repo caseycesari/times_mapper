@@ -21,14 +21,10 @@ end
 get '/' do
   if params[:search]
     @data = get_json(params[:search])
+    @result = @data.to_json
   end
 
   haml:index
-end
-
-get '/test' do
-  @data = get_json('romney')
-  puts @data
 end
 
 def get_json(topic, options = {})
@@ -40,7 +36,7 @@ def get_json(topic, options = {})
 
   base_url = "http://api.nytimes.com/svc/search/v1/"
   api_key = ENV['NYTIMES_API_KEY']
-  query = "article?format=json&query=#{topic}&begin_date=#{options[:begin_date]}&end_date=#{options[:end_date]}&offset=#{options[:offset]}&fields=title,url,date"
+  query = "article?format=json&query=title:#{topic}&begin_date=#{options[:begin_date]}&end_date=#{options[:end_date]}&offset=#{options[:offset]}&fields=title,url,date,nytd_geo_facet"
   url = "#{base_url}#{URI.encode(query)}&api-key=#{api_key}"
   resp = Net::HTTP.get_response(URI.parse(url))
   data = resp.body
