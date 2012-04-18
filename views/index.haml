@@ -15,12 +15,36 @@
 
     %script{:type => 'text/javascript'}
       :plain
-        TG.overlay.init();
-        var map = new TM.Map({
-          'container': 'map-div',
-          'lat': 40.756389,
-          'lng': -73.99, 
-          'zoom': 12
+        $(document).ready(function () {
+    
+          TG.overlay.init();
+          var map = new TM.Map({
+            'container': 'map-div',
+            'lat': 40.756389,
+            'lng': -73.99, 
+            'zoom': 12
+          });
+
+          $('.search').click(function(e){
+            if ($('.topic').val() === '') {
+              return false;
+            } else {
+              TM.utils.makeQuery($('.topic').val());
+            }
+
+            e.preventDefault();
+          });
+
+          $('.clear').click(function(e){
+            TM.utils.clear();
+
+            e.preventDefault();
+          });
+          
+          window.addEventListener("popstate", function(e) {
+            TM.utils.refresh(location.pathname);
+          });
+
         });
 
   %body
@@ -28,19 +52,21 @@
       %h1
         %a{:href => '/'}
           TimesMapper
-          %span Search for a subject to see where it was reported on by the New York Times. 
+          %span Search for a topic to see stories from the New York Times that are tagged with a location.
     %div.container
       %form
         %fieldset
-          %input{:type => 'text', :name => 'search', :placeholder => 'Enter a topic', :value => params[:search]}
-          %button{:class => 'submit'} Submit
+          %input{:type => 'text', :class => 'topic', :name => 'topic', :placeholder => 'Enter a topic', :value => params[:search]}
+          %button{:class => 'search'} Search
           %button{:class => 'clear'} Clear
       
+      %div.results
+
       %div#map-div
 
     %div.overlay.about
       %p
-        TimesMapper is a companion project to 
+        TimesMapper is a companion project to and forked from 
         %a{:target => "_blank", :href => "http://timesgrapher.herokuapp.com/"} TimesGrapher
         by 
         %a{:target => "_blank", :href => "http://mikeball.us/"} MDB
