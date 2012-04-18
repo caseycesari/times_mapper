@@ -10,7 +10,6 @@ require 'net/http'
 require 'date'
 require 'yaml'
 require 'data_mapper'
-require 'dm-sqlite-adapter'
 
 require 'models'
 
