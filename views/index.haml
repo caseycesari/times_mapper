@@ -26,19 +26,18 @@
           });
 
           $('.search').click(function(e){
-            if ($('.topic').val() === '') {
-              return false;
-            } else {
-              TM.utils.makeQuery($('.topic').val());
-            }
-
             e.preventDefault();
+            // TODO: check that search term isn't a bunch of crap
+
+            if ($('.topic').val() !== '') {
+              history.pushState(null, '', '/search/' + $('.topic').val());
+              TM.utils.checkForData($('.topic').val());
+            } 
           });
 
           $('.clear').click(function(e){
-            TM.utils.clear();
-
             e.preventDefault();
+            TM.utils.clear();
           });
           
           window.addEventListener("popstate", function(e) {
