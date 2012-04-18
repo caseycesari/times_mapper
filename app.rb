@@ -18,7 +18,7 @@ configure do
   set :scss, {:style => :compact, :debug_info => false}
   Compass.add_project_configuration(File.join(Sinatra::Application.root, 'config.rb'))
 
-  DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/tm.db")
+  DataMapper::setup(:default, (ENV["DATABASE_URL"] || "sqlite3://#{Dir.pwd}/tm.db"))
   DataMapper.finalize
   Location.auto_upgrade!
 end
