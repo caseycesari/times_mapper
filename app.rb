@@ -19,12 +19,16 @@ get '/stylesheets/:name.css' do
 end
 
 get '/' do
-  if params[:search]
-    @data = get_json(params[:search])
+  haml:index
+end
+
+get '/search/:topic' do
+  if params[:topic]
+    @data = get_json(params[:topic])
+    
+    content_type :json
     @result = @data.to_json
   end
-
-  haml:index
 end
 
 def get_json(topic, options = {})
