@@ -15,14 +15,18 @@
 
     %script{:type => 'text/javascript'}
       :plain
+        var map;
+
         $(document).ready(function () {
     
           TG.overlay.init();
-          var map = new TM.Map({
+          TM.utils.cacheLocations();
+
+          map = new TM.Map({
             'container': 'map-div',
-            'lat': 40.756389,
-            'lng': -73.99, 
-            'zoom': 12
+            'lat': 39,
+            'lng': -96, 
+            'zoom': 4
           });
 
           $('.search').click(function(e){
@@ -37,11 +41,20 @@
 
           $('.clear').click(function(e){
             e.preventDefault();
+            history.pushState(null, '', '/!');
             TM.utils.clear();
           });
           
           window.addEventListener("popstate", function(e) {
-            TM.utils.refresh(location.pathname);
+            var url;
+
+            url = location.pathname.split('/');
+
+            if (url[1] && url[1] === 'search') {
+              TM.utils.refresh(location.pathname);
+            } else {
+              TM.utils.clear();
+            }
           });
 
         });
