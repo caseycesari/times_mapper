@@ -30,8 +30,14 @@ get '/stylesheets/:name.css' do
   scss(:"sass/#{params[:name]}")
 end
 
-# Index view
+# Redirect index to /!# so we
+# can handle pushstate changes
 get '/' do
+  redirect '/!'
+end
+
+# Go to the index
+get '/!' do
   haml:index
 end
 
@@ -56,6 +62,16 @@ end
 # Save the given location and its coordinates
 post '/location/:name/:lat/:lng/' do
   location = Location.create(:name => params[:name], :lat => params[:lat], :lng => params[:lng])
+end
+
+# Return all the saved locations
+get '/locations' do
+  @locations = Location.all();
+
+  @formatted = reformat_location_hash(@locations)
+
+  content_type :json
+  @formatted.to_json
 end
 
 # Get the given location and its coordinates
@@ -93,3 +109,20 @@ def get_json(topic, options = {})
   
   return result
 end
+
+helpers do 
+
+  def reformat_location_hash(results)
+    locations_hash = {}
+
+    results.each do |l|
+      locations_hash[l.name] = {}
+      locations_hash[l.name]['lat'] = l.lat
+      locations_hash[l.name]['lng'] = l.lng
+    end
+
+    return locations_hash
+  end
+
+end
+
