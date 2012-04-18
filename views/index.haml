@@ -34,7 +34,11 @@
         %fieldset
           %input{:type => 'text', :name => 'search', :placeholder => 'Enter a topic', :value => params[:search]}
           %input{:type => 'submit'}
-          %a{:href => '/', :class => 'clear'} clear
+          %button{:class => 'clear'} Clear
+
+        -if params[:search]
+          #{@data}
+      
       %div#map-container
 
     %div.overlay.about
