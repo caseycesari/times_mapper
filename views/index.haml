@@ -11,6 +11,7 @@
     %script{:src => "http://code.leafletjs.com/leaflet-0.3.1/leaflet.js"}
     %script{:src => "/javascript/contrib/wax.leaf.min.js"}
     %script{:src => '/javascript/tg.js'}
+    %script{:src => '/javascript/states.js'}
     %script{:src => '/javascript/timesmapper.js'}
 
     %script{:type => 'text/javascript'}
@@ -20,7 +21,6 @@
         $(document).ready(function () {
     
           TG.overlay.init();
-          TM.utils.cacheLocations();
 
           map = new TM.Map({
             'container': 'map-div',
@@ -46,15 +46,7 @@
           });
           
           window.addEventListener("popstate", function(e) {
-            var url;
-
-            url = location.pathname.split('/');
-
-            if (url[1] && url[1] === 'search') {
-              TM.utils.refresh(location.pathname);
-            } else {
-              TM.utils.clear();
-            }
+            TM.utils.handlePopState();
           });
 
         });
@@ -104,8 +96,15 @@
       %ul
         %li
           &copy; 2012
-          %a{:target => "_blank", :href => "http://caseypthomas.org"} CPT
-        %li
+          %a{:target => "_blank", :href => "http://caseypthomas.org"} CPT 
+          \/
+          %a{:target => "_blank", :href => "http://mikeball.us"} MDB
+        %li 
+          Forked from 
+          %a{:target => "_blank", :href => "http://timesgrapher.herokuapp.com"} TimesGrapher
+        %li   
           %a{:target => "_blank", :href => "http://github.com/cpt/times_mapper"} Source Code
         %li
           %a{:"data-role" => "overlay-trigger", :"data-overlay" => ".about", :href => "#"} About
+        %li
+          Not affliated with the New York Times
