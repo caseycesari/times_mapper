@@ -8,18 +8,6 @@ GEM
       fssm (>= 0.2.7)
       sass (~> 3.1)
     daemons (1.1.8)
-    data_objects (0.10.8)
-      addressable (~> 2.1)
-    dm-core (1.2.0)
-      addressable (~> 2.2.6)
-    dm-do-adapter (1.2.0)
-      data_objects (~> 0.10.6)
-      dm-core (~> 1.2.0)
-    dm-postgres-adapter (1.2.0)
-      dm-do-adapter (~> 1.2.0)
-      do_postgres (~> 0.10.6)
-    do_postgres (0.10.8)
-      data_objects (= 0.10.8)
     eventmachine (0.12.10)
     fssm (0.2.9)
     haml (3.1.4)
@@ -55,8 +43,6 @@ PLATFORMS
 
 DEPENDENCIES
   compass
-  dm-core
-  dm-postgres-adapter
   haml
   heroku
   json
