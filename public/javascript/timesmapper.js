@@ -3,9 +3,9 @@ if (typeof TM === 'undefined' || !TM) {
 }
 
 // Map constructer
-TM.Map = function(options) {
+TM.Map = function(options, callback) {
   this.options = options;
-  this.markers = [];
+  this.markers = {};
   this.layers = [];
   var parent = this;
 
@@ -14,6 +14,8 @@ TM.Map = function(options) {
       parent.m = new L.Map(options.container)
         .addLayer(new wax.leaf.connector(tilejson))
         .setView(new L.LatLng(options.lat, options.lng), options.zoom);
+        
+      if (typeof callback === "function" && callback) { callback(); }
   });
 }
 
@@ -21,12 +23,11 @@ TM.Map = function(options) {
 TM.Map.prototype = {
 
   // Create and add a single point marker to the map
-  addMarker: function(options) {
-    var markerLocation = new L.LatLng(options.lat, options.lng);
-    var marker = new L.Marker(markerLocation);
+  addMarker: function(id, marker) {
+    //var markerLocation = new L.LatLng(options.lat, options.lng);
+    //var marker = new L.Marker(markerLocation);
     this.m.addLayer(marker);
-
-    this.markers.push(marker);
+    this.markers[id] = marker;
   },
 
   // Create a group of circle markers
@@ -44,15 +45,9 @@ TM.Map.prototype = {
   },
 
   // Create circle marker
-  createCircleMarker: function(options) {
-    var circleLocation = new L.LatLng(options.lat, options.lng),
-    circleOptions = {
-        color: '#333',
-        fillColor: '#222',
-        fillOpacity: 0.5
-    };
-
-    var circle = new L.Circle(circleLocation, 100000, circleOptions);
+  createCircleMarker: function(loc, size, options) {
+    var circleLocation = new L.LatLng(loc.lat, loc.lng);
+    var circle = new L.Circle(loc, size, options);
 
     return circle;
   },
@@ -85,12 +80,7 @@ TM.Map.prototype = {
       this.removeMarker(this.markers[marker]);
     }
     this.markers.length = 0;
-  },
-
-  fitToMarkers: function() {
-
-  },
-
+  }
 };
 
 // Holds on to the results data
@@ -104,9 +94,7 @@ TM.utils = {
   // rather than /. Executes a search for :topic
   // and fills input with :topic
   refresh: function(location) {
-    var url;
-
-    url = location.split('/')
+    var url = location.split('/')
 
     if(url[1] === 'search') {
       $('.topic').val(url[2]);
@@ -114,9 +102,38 @@ TM.utils = {
     }
   },
 
+  addStateMarkers: function() {
+    var state;
+
+    states.forEach(function (state) {
+        var loc = {
+          lat: state.lat,
+          lng: state.lng
+        };
+        var options = {
+          fillColor: '#222',
+          fillOpacity: 0.5,
+          stroke: false
+        };
+    
+        var circle = map.createCircleMarker(loc, 0, options);
+        map.addMarker(state.name, circle);
+    });
+  },
+
   // Update the url with the search topic
   updateURL: function(topic) {
     history.pushState(null, '', '/search/' + topic);
+  },
+
+  handlePopState: function() {
+    var url = location.pathname.split('/');
+
+    if (url[1] && url[1] === 'search') {
+      TM.utils.refresh(location.pathname);
+    } else {
+      TM.utils.clear();
+    }
   },
 
   checkForData: function(topic) {
@@ -130,46 +147,47 @@ TM.utils = {
   },
 
   processResults: function(topic) {
-    TM.utils.parseArticles(TM.cache[topic].data.results);
+    if ($.isEmptyObject(map.markers)) {
+      TM.utils.addStateMarkers();
+    }
+    TM.cache[topic].states = {};
+    TM.utils.countArticles(topic, TM.cache[topic].data.results);
   },
 
-  parseArticles: function(articles) {
-    var locations = [];
-
+  countArticles: function(topic, articles) {
     for (article in articles) {
-      if (articles[article].nytd_geo_facet) {
-        var location = {};
-        var geo;
+      var geo = articles[article].nytd_geo_facet;
+      if (geo) {
+        if (TM.cache[topic].states[geo[0]]) {
+          TM.cache[topic].states[geo[0]]++ 
+        } else {
+          TM.cache[topic].states[geo[0]] = 1;
+        }
+      }
+    }
+    TM.utils.updateStateMarkers(topic);
+  },
 
-        //geo = articles[article].nytd_geo_facet[0];
-        location.lat = TM.cache.locations['FLORIDA'].lat;
-        location.lng = TM.cache.locations['FLORIDA'].lng;
-        location.title = articles[article].title;
-
-        locations.push(location);
+  updateStateMarkers: function(topic) {
+    var stateCounts = TM.cache[topic].states;
+    
+    for (marker in map.markers){
+      if (map.markers.hasOwnProperty(marker)) {
+        if (TM.cache[topic].states[marker]) {
+          TM.utils.updateMarkerRadius(marker, TM.cache[topic].states[marker] * 75000);
+        } else {
+          TM.utils.updateMarkerRadius(marker, 0);
+        }
       }
     }
 
-    map.createCircleMarkerLayerGroup(locations);
-  },
-
-  cacheLocations: function(callback) {
-    $.ajax({
-      url: '/locations',
-      dataType: 'json',
-      success: function(data) {
-        TM.cache.locations = data;
-      }
-    });
   },
 
   // Make a query to the NYT Article API
   // If the query is successful, update the URL
   // and pass on the results.
   makeQuery: function(topic) {
-    var cleanTopic;
-
-    cleanTopic = escape(topic);
+    var cleanTopic = escape(topic);
 
     $.ajax({
       url: '/query/' + topic,
@@ -181,28 +199,23 @@ TM.utils = {
     });
   },
 
-  // Saves a location along with its coordinats 
-  // to the database
-  saveLocation: function(location) {
-    var params;
-
-    params = location.name + "/" + location.lat + "/" + location.lng + "/";
-
-    $.ajax({
-      type: 'POST',
-      url: '/location/' + params,
-      success: function() {
-        console.log('saved');
-      }
-    });
+  updateMarkerRadius: function(id,size) {
+    map.markers[id].setRadius(size); 
   },
+
+  resetMarkerRadius: function() {
+    for (marker in map.markers) {
+      if (map.markers.hasOwnProperty(marker)) {
+        TM.utils.updateMarkerRadius(marker, 0);
+      }
+    }
+  },  
 
   // Resets the page to the default state
   // Clears map, inputs, etc.
   clear: function() {
     $('.topic').val('');
-    map.removeLayers();
-    map.removeMarkers();
+    TM.utils.resetMarkerRadius();
   }
 
 }
