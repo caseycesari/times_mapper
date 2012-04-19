@@ -156,7 +156,7 @@ TM.utils = {
 
   countArticles: function(topic, articles) {
     for (article in articles) {
-      var geo = articles[article].nytd_geo_facet;
+      var geo = articles[article].geo_facet;
       if (geo) {
         if (TM.cache[topic].states[geo[0]]) {
           TM.cache[topic].states[geo[0]]++ 
