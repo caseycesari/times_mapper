@@ -93,7 +93,7 @@ TM.cache = {};
 TM.utils = {
 
   // Triggered if a user comes to /search/:topic
-  // rather than /. Executes a search for :topic
+  // rather than /!. Executes a search for :topic
   // and fills input with :topic
   refresh: function(location) {
     var url = location.split('/')
@@ -102,25 +102,6 @@ TM.utils = {
       $('.topic').val(url[2]);
       TM.utils.checkForData(url[2]);
     }
-  },
-
-  addStateMarkers: function() {
-    var state;
-
-    states.forEach(function (state) {
-        var loc = {
-          lat: state.lat,
-          lng: state.lng
-        };
-        var options = {
-          fillColor: '#222',
-          fillOpacity: 0.5,
-          stroke: false
-        };
-    
-        var circle = map.createCircleMarker(loc, 0, options);
-        map.addMarker(state.name, circle);
-    });
   },
 
   // Update the url with the search topic
@@ -138,13 +119,36 @@ TM.utils = {
     }
   },
 
+  // Creates the initial markers for each state
+  // with a radius of 0 so they are not visible.
+  addStateMarkers: function() {
+    var state;
+
+    TM.states.forEach(function (state) {
+        var loc = {
+          lat: state.lat,
+          lng: state.lng
+        };
+        var options = {
+          fillColor: '#222',
+          fillOpacity: 0.5,
+          stroke: false
+        };
+    
+        var circle = map.createCircleMarker(loc, 0, options);
+        map.addMarker(state.name, circle);
+    });
+  },
+
   checkForData: function(topic) {
     if (TM.cache[topic]) {
       console.log('cache');
       TM.utils.processResults(topic);
     } else  {
       console.log('query');
-      TM.utils.makeQuery(topic)
+      TM.cache[topic] = {};
+      TM.cache[topic].articles = [];
+      TM.utils.makeQuery(topic, 0)
     }
   },
 
@@ -153,23 +157,57 @@ TM.utils = {
       TM.utils.addStateMarkers();
     }
     TM.cache[topic].states = {};
-    TM.utils.countArticles(topic, TM.cache[topic].data.results);
+    TM.utils.countArticles(topic, TM.cache[topic].articles);
   },
 
+  // Make a query to the NYT Article API
+  makeQuery: function(topic, offset) {
+    var cleanTopic = escape(topic);
+
+    $.ajax({
+      url: '/query/' + topic + '/' + offset,
+      success: function(data) {
+        TM.cache[topic].articles = TM.cache[topic].articles.concat(data.results);
+
+        if (TM.cache[topic].articles.length === 50 || data.results.length === 0) {
+          TM.utils.processResults(topic);
+        } else {
+          window.setTimeout(function() { TM.utils.makeQuery(topic, offset + 10); }, 250);
+        }
+      }
+    });
+  },
+
+  // Count the number of articles per state
   countArticles: function(topic, articles) {
     for (article in articles) {
-      var geo = articles[article].geo_facet;
-      if (geo) {
-        if (TM.cache[topic].states[geo[0]]) {
-          TM.cache[topic].states[geo[0]]++ 
+      var state = TM.utils.findState(articles[article].geo_facet);
+      if (state) {
+        if (TM.cache[topic].states[state]) {
+          TM.cache[topic].states[state]++ 
         } else {
-          TM.cache[topic].states[geo[0]] = 1;
+          TM.cache[topic].states[state] = 1;
         }
       }
     }
     TM.utils.updateStateMarkers(topic);
   },
 
+  findState: function(geo_facet) {
+    var tag,
+      state;
+
+    for (tag in geo_facet) {
+      for (state in TM.states) {
+        if (geo_facet[tag] === TM.states[state].name) {
+          return geo_facet[tag];
+        }
+      }
+    }
+  },
+
+  // Update the state marker radius size with
+  // the number of articles per state * a factor
   updateStateMarkers: function(topic) {
     var stateCounts = TM.cache[topic].states;
     
@@ -185,39 +223,24 @@ TM.utils = {
 
   },
 
-  // Make a query to the NYT Article API
-  // If the query is successful, update the URL
-  // and pass on the results.
-  makeQuery: function(topic) {
-    var cleanTopic = escape(topic);
-
-    $.ajax({
-      url: '/query/' + topic,
-      success: function(data) {
-        TM.cache[topic] = {};
-        TM.cache[topic].data = data;
-        TM.utils.processResults(topic);
-      }
-    });
-  },
-
+  // Update the given marker's radius
   updateMarkerRadius: function(id,size) {
     map.markers[id].setRadius(size); 
   },
-
-  resetMarkerRadius: function() {
-    for (marker in map.markers) {
-      if (map.markers.hasOwnProperty(marker)) {
-        TM.utils.updateMarkerRadius(marker, 0);
-      }
-    }
-  },  
 
   // Resets the page to the default state
   // Clears map, inputs, etc.
   clear: function() {
     $('.topic').val('');
     TM.utils.resetMarkerRadius();
-  }
+  },
 
+  // Set each marker's radius back to 0
+  resetMarkerRadius: function() {
+    for (marker in map.markers) {
+      if (map.markers.hasOwnProperty(marker)) {
+        TM.utils.updateMarkerRadius(marker, 0);
+      }
+    }
+  }
 }
