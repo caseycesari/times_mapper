@@ -158,8 +158,10 @@ TM.utils = {
   // or if we need to query the NYT API
   checkForData: function(topic) {
     if (TM.cache[topic]) {
+      console.log('cache');
       TM.utils.processResults(topic);
     } else  {
+      console.log('query')
       TM.cache[topic] = {};
       TM.cache[topic].articles = [];
       TM.utils.makeQuery(topic, 0);
@@ -168,8 +170,6 @@ TM.utils = {
 
   // Make a query to the NYT Article API
   makeQuery: function(topic, offset) {
-    var cleanTopic = escape(topic);
-
     $.ajax({
       url: '/query/' + topic + '/' + offset,
       success: function(data) {
