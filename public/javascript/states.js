@@ -1,4 +1,8 @@
-var states = [
+if (typeof TM === 'undefined' || !TM) {
+  var TM = {};
+}
+
+TM.states = [
   {"name":"ALABAMA","lat":32.806673,"lng":-86.791133},
   {"name":"ALASKA","lat":61.370717,"lng":-152.40442},
   {"name":"ARIZONA","lat":33.729761,"lng":-111.431224},
