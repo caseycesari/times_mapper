@@ -63,7 +63,7 @@ def get_json(topic, options = {})
   base_url = "http://api.nytimes.com/svc/search/v1/"
   api_key = ENV['NYTIMES_API_KEY']
   facets = "desk_facet%3A%5BU.S.+%2F+Politics%5D"
-  query = "article?format=json&query=title:#{topic}&offset=#{options[:offset]}&fields=title,url,date,geo_facet"
+  query = "article?format=json&query=#{topic}&offset=#{options[:offset]}&fields=title,url,date,geo_facet"
   url = "#{base_url}#{query}&api-key=#{api_key}"
   puts url
   resp = Net::HTTP.get_response(URI.parse(url))
