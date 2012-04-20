@@ -38,8 +38,8 @@
             // TODO: check that search term isn't a bunch of crap
 
             if ($('.topic').val() !== '') {
-              history.pushState(null, '', '/search/' + $('.topic').val());
-              TM.utils.checkForData($('.topic').val());
+              history.pushState(null, '', '/search/' + $('.topic').val().toLowerCase());
+              TM.utils.checkForData($('.topic').val().toLowerCase());
             } 
           });
 
