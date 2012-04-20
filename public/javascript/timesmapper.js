@@ -3,7 +3,7 @@ if (typeof TM === 'undefined' || !TM) {
 }
 
 // Map constructer
-TM.Map = function(options, callback) {
+TM.Map = function(container, options, callback) {
   this.options = options;
   this.markers = {};
   this.layers = [];
@@ -11,9 +11,11 @@ TM.Map = function(options, callback) {
 
   wax.tilejson('http://a.tiles.mapbox.com/v3/caseypt.map-6gb1zsot.jsonp',
     function(tilejson) {
-      parent.m = new L.Map(options.container)
+      var center = options.center.split(',');
+
+      parent.m = new L.Map(container, options)
         .addLayer(new wax.leaf.connector(tilejson))
-        .setView(new L.LatLng(options.lat, options.lng), options.zoom);
+        .setView(new L.LatLng(center[0], center[1]), options.zoom);
         
       if (typeof callback === "function" && callback) { callback(); }
   });
