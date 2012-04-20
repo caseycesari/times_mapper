@@ -22,11 +22,15 @@
     
           TG.overlay.init();
 
-          map = new TM.Map({
-            'container': 'map-div',
-            'lat': 39,
-            'lng': -96, 
-            'zoom': 4
+          map = new TM.Map('map-div', 
+          {
+            center: '39,-96',
+            zoom: 4,
+            dragging: false,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            zoomControl: false
           });
 
           $('.search').click(function(e){
