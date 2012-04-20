@@ -1,4 +1,32 @@
+@import 'variables';
+
 #map-div {
   height: 450px;
   width: 100%;
+}
+
+.tooltip {
+  color: #313131;
+  position: absolute;
+  text-align: center;
+  padding: 4px;
+  top: 0px;
+  left: 0px;
+  height: 36px;
+  width: 100px;
+  border: solid 2px #414141;
+  background-color: #fff;
+  display: none;
+
+  h2 {
+    font-size: 14px;
+    display: inline-block;
+    margin: 0px;
+    text-transform: capitalize;
+  }
+
+  p {
+    margin: 0px;
+    font-size: 12px;
+  }
 }
