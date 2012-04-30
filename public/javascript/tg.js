@@ -58,6 +58,7 @@ TG.articles = (function ($) {
   _self = {
     load: function (options) {
       var settings = {
+        trigger: '',
         url: '',
         appendTo: 'div.overlay'
       };
@@ -70,19 +71,23 @@ TG.articles = (function ($) {
         url: settings.url,
         success: function(data) {
           $(settings.appendTo).append(data);
-          //_self.setUpHandlers();
         },
 
         error: function (data) {
-          console.log(data);
+          $(settings.appendTo).append($('<p>', {
+            html: 'Error loading data.',
+            class: 'error'
+          }));
+          $(settings.appendTo).append(settings.trigger.html('Try again').fadeIn('fast'));
         }
       });
     },
 
     setUpHandlers: function() {
       $('[data-role="articles-loader"]').live('click', function (evt) {
-        $(this).fadeOut();
+        $(this).fadeOut('fast');
         TG.articles.load({
+          trigger: $(this),
           appendTo: $(this).closest('div.overlay'),
           url: $(this).attr('data-ajax-url')
         });
