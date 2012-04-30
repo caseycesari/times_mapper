@@ -158,10 +158,9 @@ TM.utils = {
   // or if we need to query the NYT API
   checkForData: function(topic) {
     if (TM.cache[topic]) {
-      console.log('cache');
       TM.utils.processResults(topic);
     } else  {
-      console.log('query')
+      $('h2').html('Fetching articles...');
       TM.cache[topic] = {};
       TM.cache[topic].articles = [];
       TM.utils.makeQuery(topic, 0);
@@ -308,7 +307,7 @@ TM.utils = {
       $(document).mousemove(function(e){
         $('.tooltip').css({
           left: e.pageX - offset.left - 57,
-          top: e.pageY - offset.top - 100
+          top: e.pageY - offset.top - 65
         });
       });
     });
