@@ -175,10 +175,10 @@ TM.utils = {
       success: function(data) {
         TM.cache[topic].articles = TM.cache[topic].articles.concat(data.results);
 
-        if (TM.cache[topic].articles.length === 50 || data.results.length === 0) {
+        if (TM.cache[topic].articles.length === 10 || data.results.length === 0) {
           TM.utils.processResults(topic);
         } else {
-          window.setTimeout(function() { TM.utils.makeQuery(topic, offset + 10); }, 250);
+          window.setTimeout(function() { TM.utils.makeQuery(topic, offset + 10); }, offset * 10);
         }
       }
     });
@@ -193,11 +193,53 @@ TM.utils = {
     }
     TM.cache[topic].states = {};
     TM.utils.countArticles(topic, TM.cache[topic].articles);
+    if (TM.cache[topic].msg) { 
+      TM.utils.showResultsMsg(TM.cache[topic].msg);
+    } else {
+      TM.utils.buildResultsMsg(topic);
+    }
+  },
+
+  // Builds and caches the search summary message
+  buildResultsMsg: function(topic) {
+    var msg,
+      rawCount,
+      art = 'articles',
+      ind = 'are',
+      rawcount = '100+';
+
+    if (TM.cache[topic].articles.length !== 100) {
+      rawCount = TM.cache[topic].articles.length;
+    } 
+
+    if (rawCount === 1) {
+      art = 'article'
+    } 
+
+    if (TM.cache[topic].taggedCount === 1) {
+      ind = 'is'
+    } 
+
+    msg = 'The New York Times published ' +
+      ' <em>' + rawCount + '</em> ' +
+      art + ' in the past 180 days containing ' +
+      ' <em>' + topic + '</em>; ' + 
+      '<em>' + TM.cache[topic].taggedCount + '</em>' +
+      ' of which ' + ind + ' tagged with a state.';
+
+    TM.cache[topic].msg = msg;
+    TM.utils.showResultsMsg(msg);
+  },
+
+  // Shows the search summary message
+  showResultsMsg: function(msg) {
+    $('h2').html(msg);
   },
 
   // Count the number of articles per state
   countArticles: function(topic, articles) {
     var article;
+    TM.cache[topic].taggedCount = 0;
 
     for (article in articles) {
       if (articles.hasOwnProperty(article)) {
@@ -209,6 +251,7 @@ TM.utils = {
           } else {
             TM.cache[topic].states[state] = 1;
           }
+          TM.cache[topic].taggedCount++;
         }
       }
     }
@@ -265,7 +308,7 @@ TM.utils = {
       $(document).mousemove(function(e){
         $('.tooltip').css({
           left: e.pageX - offset.left - 57,
-          top: e.pageY - offset.top - 60
+          top: e.pageY - offset.top - 100
         });
       });
     });
