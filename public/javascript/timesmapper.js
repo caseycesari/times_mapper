@@ -180,6 +180,9 @@ TM.utils = {
           window.setTimeout(function() { TM.utils.makeQuery(topic, offset + 10); }, offset * 10);
         }
       }
+      error: function() {
+        TM.utils.showResultsMsg('Sorry, there was an error with your search.');
+      }
     });
   },
 
