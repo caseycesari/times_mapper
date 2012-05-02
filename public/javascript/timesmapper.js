@@ -174,7 +174,7 @@ TM.utils = {
       success: function(data) {
         TM.cache[topic].articles = TM.cache[topic].articles.concat(data.results);
 
-        if (TM.cache[topic].articles.length === 10 || data.results.length === 0) {
+        if (TM.cache[topic].articles.length === 100 || data.results.length === 0) {
           TM.utils.processResults(topic);
         } else {
           window.setTimeout(function() { TM.utils.makeQuery(topic, offset + 10); }, offset * 10);
@@ -202,14 +202,16 @@ TM.utils = {
   // Builds and caches the search summary message
   buildResultsMsg: function(topic) {
     var msg,
-      rawCount,
       art = 'articles',
       ind = 'are',
-      rawcount = '100+';
+      rawCount = '100+';
 
     if (TM.cache[topic].articles.length !== 100) {
       rawCount = TM.cache[topic].articles.length;
     } 
+
+    console.log('rawCount', rawCount);
+    console.log('articles.length', TM.cache[topic].articles.length);
 
     if (rawCount === 1) {
       art = 'article'
@@ -221,7 +223,7 @@ TM.utils = {
 
     msg = 'The New York Times published ' +
       ' <em>' + rawCount + '</em> ' +
-      art + ' in the past 180 days containing ' +
+      art + ' in the past 90 days containing ' +
       ' <em>' + topic + '</em>; ' + 
       '<em>' + TM.cache[topic].taggedCount + '</em>' +
       ' of which ' + ind + ' tagged with a state.';
