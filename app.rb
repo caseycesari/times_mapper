@@ -55,15 +55,16 @@ end
 # From MDB's TimesGrapher
 def get_json(topic, options = {})
   options = {
-    :begin_date => '20120101',
-    :end_date => '20120130',
     :offset => 0
   }.merge(options)
 
   base_url = "http://api.nytimes.com/svc/search/v1/"
   api_key = ENV['NYTIMES_API_KEY']
   facets = "desk_facet%3A%5BU.S.+%2F+Politics%5D"
-  query = "article?format=json&query=#{topic}&offset=#{options[:offset]}&fields=title,url,date,geo_facet"
+  end_date = Date.today
+  begin_date = end_date - 90
+  dates = "begin_date=" + begin_date.strftime("%Y%m%d")  + "&end_date=" + end_date.strftime("%Y%m%d")
+  query = "article?format=json&query=#{topic}&offset=#{options[:offset]}&#{dates}&fields=title,url,date,geo_facet"
   url = "#{base_url}#{URI.encode(query)}&api-key=#{api_key}"
   puts url
   resp = Net::HTTP.get_response(URI.parse(url))
