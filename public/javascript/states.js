@@ -41,7 +41,7 @@ TM.states = [
   {"name":"OHIO","lat":40.388781,"lng":-82.764916},
   {"name":"OKLAHOMA","lat":35.565342,"lng":-96.928919},
   {"name":"OREGON","lat":44.57202,"lng":-122.070939},
-  {"name":"PENNSYLVANIA","lat":40.590752,"lng":-77.209755},
+  {"name":"PENNSYLVANIA","lat":40.88,"lng":-77.6},
   {"name":"RHODE ISLAND","lat":41.680893,"lng":-71.511782},
   {"name":"SOUTH CAROLINA","lat":33.856893,"lng":-80.945011},
   {"name":"SOUTH DAKOTA","lat":44.299782,"lng":-99.438825},
