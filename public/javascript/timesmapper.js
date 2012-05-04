@@ -179,7 +179,7 @@ TM.utils = {
         } else {
           window.setTimeout(function() { TM.utils.makeQuery(topic, offset + 10); }, offset * 10);
         }
-      }
+      },
       error: function() {
         TM.utils.showResultsMsg('Sorry, there was an error with your search.');
       }
@@ -213,9 +213,6 @@ TM.utils = {
       rawCount = TM.cache[topic].articles.length;
     } 
 
-    console.log('rawCount', rawCount);
-    console.log('articles.length', TM.cache[topic].articles.length);
-
     if (rawCount === 1) {
       art = 'article'
     } 
@@ -240,6 +237,7 @@ TM.utils = {
     $('h2').html(msg);
   },
 
+
   // Count the number of articles per state
   countArticles: function(topic, articles) {
     var article;
@@ -251,10 +249,13 @@ TM.utils = {
         
         if (state) {
           if (TM.cache[topic].states[state]) {
-            TM.cache[topic].states[state]++;
+            TM.cache[topic].states[state].count++;
           } else {
-            TM.cache[topic].states[state] = 1;
+            TM.cache[topic].states[state] = {};
+            TM.cache[topic].states[state].articles = [];
+            TM.cache[topic].states[state].count = 1;
           }
+          TM.cache[topic].states[state].articles.push(articles[article]);
           TM.cache[topic].taggedCount++;
         }
       }
@@ -288,9 +289,10 @@ TM.utils = {
     for (marker in map.markers){
       if (map.markers.hasOwnProperty(marker)) {
         if (TM.cache[topic].states[marker]) {
-          var factor = (Math.log(TM.cache[topic].states[marker] + 1) * 100000);
+          var factor = (Math.log(TM.cache[topic].states[marker].count + 1) * 100000);
 
           TM.utils.setRolloverEvents(map.markers[marker], marker, topic);
+          TM.utils.setPopUpEvents(map.markers[marker], marker, topic);
           TM.utils.updateMarkerRadius(marker, factor);
         } else {
           TM.utils.updateMarkerRadius(marker, 0);
@@ -300,13 +302,13 @@ TM.utils = {
   },
 
   // Set up marker toolips 
-  setRolloverEvents: function (marker, id, topic) {
+  setRolloverEvents: function(marker, state, topic) {
     var offset = $('.leaflet-control-container').offset();
 
     marker.on("mouseover", function () {
       TM.utils.setMarkerHighlight(marker);
 
-      var html = TM.utils.makeArticleSnippet(id, topic);
+      var html = TM.utils.makeStateTooltip(state, topic);
       TM.utils.showToolTip(html);
 
       $(document).mousemove(function(e){
@@ -324,22 +326,81 @@ TM.utils = {
     });
   },
 
+  // Attach article overlay popups to marker
+  setPopUpEvents: function(marker, state, topic) {
+    marker.on("click", function () {
+      if (TM.cache[topic].states[state].html) {
+        TM.utils.showPopUp(state, html);
+      } else {
+        var html = TM.utils.buildArticlePopUp(state, topic);
+        TM.utils.showPopUp(state, html);
+      }
+    });
+  },
+
+  buildArticlePopUp: function(state, topic){
+    var html;
+
+    var articleList = '<% _.each(articles,function(article) { %> \
+      <li><h2><% print(TM.utils.formatDate(article.date)); %>: \
+      <a href="<%= article.url %>" target="_blank"><%= article.title %></a></li> \
+      <% }) %>';
+
+    html = _.template(articleList, {articles: TM.cache[topic].states[state].articles});
+
+    return html;
+  },
+
+  // Changes YYYYMMDD to MM/DD/YYYY
+  formatDate: function(date) {
+    var newDate;
+
+    newDate = date.substring(4,6) + 
+      '/' + date.substring(6,8) + 
+      '/' + date.substring(0,4);
+
+    return newDate;
+  },
+
+  // Shows the article list overlay
+  showPopUp: function(state, html) {
+    if ($('.state-article-list').length !== 0) {
+      var $stateArticleList = $('.state-article-list');
+      $stateArticleList.find('.articles').html(html)
+      $stateArticleList.find('h1').html(state)
+      $stateArticleList.show();
+    } else {
+      $('<div/>', {
+        class: 'state-article-list overlay',
+        html: '<div class="x">X</div> \
+          <h1>' + state + '</h1> \
+          <div class="article-container"> \
+          <ul class="articles"></ul> \
+          </div>'
+      }).appendTo('#map-div').show();
+
+      $('.state-article-list').scroll(function(e){ e.preventDefault(); })
+      $('.x').click(function(){ $('.state-article-list').hide(); });
+      $('.articles').html(html)
+    }
+  },
+
   // Update the given marker's radius
   updateMarkerRadius: function(id,size) {
     map.markers[id].setRadius(size); 
   },
 
   // Compile the HTML needed for the marker tooltips
-  makeArticleSnippet: function(id, topic) {
+  makeStateTooltip: function(id, topic) {
     var html,
       title,
       article;
 
     title = id.toLowerCase();
-    var articles = (TM.cache[topic].states[id] === 1) ? 'Article' : 'Articles';
+    var articles = (TM.cache[topic].states[id].count === 1) ? 'Article' : 'Articles';
 
     html =  "<h2>" + title + "</h2>" +
-            "<p>" + TM.cache[topic].states[id] + 
+            "<p>" + TM.cache[topic].states[id].count + 
             ' ' + articles + '<p>'; 
 
     return html;
