@@ -209,6 +209,45 @@ header {
   }
 }
 
+.state-article-list.overlay {
+  overflow: hidden;
+  position:fixed;
+  left:106px;
+  top: 40px;
+  background-color:#ffffff;
+  display:none;
+  z-index:9999;
+  padding:10px;
+  height: 320px;
+  width:700px;
+  border:7px solid #888;
+  -moz-box-shadow: 3px 3px 4px #000;
+  -webkit-box-shadow: 3px 3px 4px #000;
+  box-shadow: 3px 3px 4px #000;
+}
+
+.article-container {
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+}
+
+.x {
+  color: #fff;
+  background-color: #888;
+  top: 10px;
+  right: 12px;
+  position: absolute;
+  display: inline-block;
+  border-radius: 15px;
+  padding: 3px 8px 3px 8px;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: $background_color;
+  }
+}
+
 footer {
   overflow: hidden;
   display: block;
