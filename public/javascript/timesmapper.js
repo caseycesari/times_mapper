@@ -9,7 +9,7 @@ TM.Map = function(container, options, callback) {
   this.layers = [];
   var parent = this;
 
-  wax.tilejson('http://a.tiles.mapbox.com/v3/caseypt.map-6gb1zsot.jsonp',
+  wax.tilejson('http://a.tiles.mapbox.com/v3/caseypt.map-kbiq8yif.jsonp',
     function(tilejson) {
       var center = options.center.split(',');
 
